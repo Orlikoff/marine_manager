@@ -12,7 +12,7 @@ class AccountDataCubit extends Cubit<AccountDataState> {
   AccountDataCubit(this.marineRepo) : super(AccountDataInitial());
 
   void authUser(String email, String password,
-      {VoidCallback? onWrongCreds}) async {
+      {VoidCallback? onWrongCreds, VoidCallback? onSuccess}) async {
     emit(AccountDataLoading());
     var data = await marineRepo.authenticateUser(
       email,
@@ -21,6 +21,7 @@ class AccountDataCubit extends Cubit<AccountDataState> {
     );
 
     if (data != null) {
+      if (onSuccess != null) onSuccess();
       credentials = data;
       emit(AccountDataChanged(data));
     }

@@ -6,7 +6,7 @@ import 'package:equatable/equatable.dart';
 part 'app_state.dart';
 
 class AppCubit extends Cubit<AppState> {
-  AppCubit() : super(AppLogin());
+  AppCubit() : super(AppRegister());
 
   void login() => emit(AppLogin());
   void register() => emit(AppRegister());

@@ -95,6 +95,9 @@ class MarineRepo {
         }
       } else {
         userCredentials['user_role'] = 'user';
+        userCredentials['marine_worker_id'] = null;
+        userCredentials['company_name'] = null;
+        userCredentials['country_of_origin'] = null;
       }
     }
 

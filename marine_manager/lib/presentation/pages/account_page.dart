@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:marine_manager/credentials.dart';
 import 'package:marine_manager/logic/account_data_cubit/account_data_cubit.dart';
+import 'package:marine_manager/logic/app_cubit/app_cubit.dart';
 import 'package:marine_manager/logic/container_data_cubit/container_data_cubit.dart';
 
 class AccountPage extends StatefulWidget {
@@ -42,7 +44,7 @@ class _AccountPageState extends State<AccountPage> {
                   style: theme.titleLarge,
                 ),
                 Text(
-                  '\$Name',
+                  credentials!['user_name'].toString(),
                   style: theme.titleLarge?.copyWith(
                     fontWeight: FontWeight.normal,
                   ),
@@ -60,7 +62,7 @@ class _AccountPageState extends State<AccountPage> {
                   style: theme.titleLarge,
                 ),
                 Text(
-                  '\$Name',
+                  credentials!['user_surname'].toString(),
                   style: theme.titleLarge?.copyWith(
                     fontWeight: FontWeight.normal,
                   ),
@@ -78,7 +80,7 @@ class _AccountPageState extends State<AccountPage> {
                   style: theme.titleLarge,
                 ),
                 Text(
-                  '\$Name',
+                  credentials!['user_email'].toString(),
                   style: theme.titleLarge?.copyWith(
                     fontWeight: FontWeight.normal,
                   ),
@@ -96,7 +98,7 @@ class _AccountPageState extends State<AccountPage> {
                   style: theme.titleLarge,
                 ),
                 Text(
-                  '\$Name',
+                  credentials!['user_role'].toString(),
                   style: theme.titleLarge?.copyWith(
                     fontWeight: FontWeight.normal,
                   ),
@@ -114,7 +116,7 @@ class _AccountPageState extends State<AccountPage> {
                   style: theme.titleLarge,
                 ),
                 Text(
-                  '\$Name',
+                  credentials!['company_name'].toString(),
                   style: theme.titleLarge?.copyWith(
                     fontWeight: FontWeight.normal,
                   ),
@@ -132,7 +134,7 @@ class _AccountPageState extends State<AccountPage> {
                   style: theme.titleLarge,
                 ),
                 Text(
-                  '\$Name',
+                  credentials!['country_of_origin'].toString(),
                   style: theme.titleLarge?.copyWith(
                     fontWeight: FontWeight.normal,
                   ),
@@ -158,6 +160,16 @@ class _AccountPageState extends State<AccountPage> {
                     foregroundColor: Colors.white,
                     backgroundColor: Colors.blue,
                   ),
+                  onPressed: () {
+                    BlocProvider.of<AppCubit>(context).login();
+                  },
+                  child: const Text('Log out'),
+                ),
+                TextButton(
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.blue,
+                  ),
                   onPressed: () {},
                   child: const Text('Delete account'),
                 ),
@@ -175,14 +187,7 @@ class _AccountPageState extends State<AccountPage> {
                       foregroundColor: Colors.white,
                       backgroundColor: Colors.orange,
                     ),
-                    onPressed: () {
-                      BlocProvider.of<AccountDataCubit>(context).authUser(
-                        'iampindos@yahoo.com',
-                        'yup_born_in_USA777',
-                        onWrongCreds: () =>
-                            _displaySnackbar('Wrong credentials'),
-                      );
-                    },
+                    onPressed: () {},
                     child: const Text('Upgrade to worker'),
                   ),
                 ),
