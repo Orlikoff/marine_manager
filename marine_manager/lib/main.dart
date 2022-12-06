@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:marine_manager/data/data_providers/postgres_data_provider.dart';
 import 'package:marine_manager/data/repositories/marine_repo.dart';
-import 'package:marine_manager/logic/data_cubit/data_cubit.dart';
+import 'package:marine_manager/logic/account_data_cubit/account_data_cubit.dart';
+import 'package:marine_manager/logic/app_cubit/app_cubit.dart';
+import 'package:marine_manager/logic/container_data_cubit/container_data_cubit.dart';
 import 'package:postgres/postgres.dart';
 
-import 'presentation/home_page.dart';
+import 'presentation/screens/main_screen.dart';
 
 Future<void> main() async {
   // Setup postgres
@@ -31,11 +33,32 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => DataCubit(MarineRepo.instance()),
-      child: const MaterialApp(
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => ContainerDataCubit(MarineRepo.instance()),
+        ),
+        BlocProvider(
+          create: (context) => AccountDataCubit(MarineRepo.instance()),
+        ),
+        BlocProvider(
+          create: (context) => AppCubit(),
+        ),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
-        home: HomePage(),
+        home: BlocBuilder<AppCubit, AppState>(
+          builder: (context, state) {
+            if (state is AppRegister) {
+              return Text('Register');
+            } else if (state is AppLogin) {
+              return Text('Login');
+            } else {
+              return const MainScreen();
+            }
+          },
+        ),
       ),
     );
   }

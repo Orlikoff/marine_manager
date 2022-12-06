@@ -7,8 +7,9 @@ class PostgresDataProvider implements DataProvider {
   PostgresDataProvider(this.connection);
 
   @override
-  Future<List<dynamic>> loadQueryResults(String query,
+  Future<List<Map<String, Map<String, dynamic>>>> loadQueryResults(String query,
       {Map<String, dynamic>? subValues}) async {
-    return await connection.query(query, substitutionValues: subValues);
+    return await connection.mappedResultsQuery(query,
+        substitutionValues: subValues);
   }
 }

@@ -1,19 +1,19 @@
-part of 'data_cubit.dart';
+part of 'port_data_cubit.dart';
 
 @immutable
-abstract class DataState extends Equatable {}
+abstract class PortDataState extends Equatable {}
 
-class DataInitial extends DataState {
+class DataInitial extends PortDataState {
   @override
   List<Object?> get props => [1];
 }
 
-class DataLoading extends DataState {
+class DataLoading extends PortDataState {
   @override
   List<Object?> get props => [1];
 }
 
-class DataChanged extends DataState {
+class DataChanged extends PortDataState {
   final List<dynamic> data;
 
   DataChanged(this.data);

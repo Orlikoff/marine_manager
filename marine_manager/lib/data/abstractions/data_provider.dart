@@ -1,4 +1,4 @@
 abstract class DataProvider {
-  Future<List<dynamic>> loadQueryResults(String query,
+  Future<List<Map<String, Map<String, dynamic>>>> loadQueryResults(String query,
       {Map<String, dynamic>? subValues});
 }
