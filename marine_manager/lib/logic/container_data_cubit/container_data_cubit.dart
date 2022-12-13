@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/animation.dart';
-import 'package:marine_manager/data/repositories/marine_repo.dart';
+import '../../data/repositories/marine_repo.dart';
 import 'package:meta/meta.dart';
 import 'package:postgres/postgres.dart';
 

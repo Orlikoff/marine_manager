@@ -1,5 +1,6 @@
 import 'package:flutter/animation.dart';
-import 'package:marine_manager/data/abstractions/data_provider.dart';
+import 'package:marine_manager/credentials.dart';
+import '../abstractions/data_provider.dart';
 
 class MarineRepo {
   late final DataProvider dataProvider;
@@ -124,5 +125,46 @@ class MarineRepo {
     }
 
     return usernamesById;
+  }
+
+  void changePassword(String newPassword) async {
+    await dataProvider
+        .loadQueryResults('call changePassword(@i, @p);', subValues: {
+      'i': credentials!['id'],
+      'p': newPassword,
+    });
+  }
+
+  Future<void> upgradeToWorker(String company, String country) async {
+    await dataProvider.loadQueryResults(
+        'INSERT INTO marine_worker(company_name, country_of_origin)'
+        'VALUES (@comp, @count);',
+        subValues: {
+          'comp': company,
+          'count': country,
+        });
+
+    var data = await dataProvider.loadQueryResults(
+        'SELECT id FROM marine_worker WHERE company_name=@e AND country_of_origin=@p;',
+        subValues: {
+          'e': company,
+          'p': country,
+        });
+
+    dynamic id;
+    for (final row in data) {
+      var tableData = row['marine_worker']!;
+      id = tableData['id'];
+    }
+
+    credentials!['marine_worker_id'] = id;
+
+    await dataProvider.loadQueryResults(
+        'INSERT INTO app_user(user_data_id, marine_worker_id, user_role)'
+        "VALUES (@id, @mid, 'worker');",
+        subValues: {
+          'id': credentials!['id'],
+          'mid': id,
+        });
   }
 }

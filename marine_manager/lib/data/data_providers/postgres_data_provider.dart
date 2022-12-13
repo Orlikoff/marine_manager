@@ -1,4 +1,4 @@
-import 'package:marine_manager/data/abstractions/data_provider.dart';
+import '../abstractions/data_provider.dart';
 import 'package:postgres/postgres.dart';
 
 class PostgresDataProvider implements DataProvider {

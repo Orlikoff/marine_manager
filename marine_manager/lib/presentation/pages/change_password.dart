@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../logic/account_data_cubit/account_data_cubit.dart';
 import '../../logic/app_cubit/app_cubit.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class ChangePassword extends StatefulWidget {
+  const ChangePassword({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<ChangePassword> createState() => _ChangePasswordState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _emailController = TextEditingController();
+class _ChangePasswordState extends State<ChangePassword> {
   final TextEditingController _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Change password'),
+      ),
       body: Center(
         child: Form(
             child: Column(
@@ -28,25 +31,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Login to\nMarine Manager',
+                    'Change password',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                 ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                controller: _emailController,
-                decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    filled: true,
-                    hintStyle: TextStyle(color: Colors.grey[800]),
-                    hintText: 'Email',
-                    fillColor: Colors.white70),
               ),
             ),
             Padding(
@@ -74,32 +63,19 @@ class _LoginScreenState extends State<LoginScreen> {
                         backgroundColor: Colors.blue,
                       ),
                       onPressed: () {
-                        if (_emailController.text.isEmpty ||
-                            _passwordController.text.isEmpty) {
+                        if (_passwordController.text.isEmpty) {
                           _displaySnackbar('Fill all the fields');
                           return;
                         }
-                        BlocProvider.of<AccountDataCubit>(context).authUser(
-                          _emailController.text,
-                          _passwordController.text,
-                          onWrongCreds: () =>
-                              _displaySnackbar('Wrong credentials'),
-                          onSuccess: () {
-                            BlocProvider.of<AppCubit>(context).logged();
-                          },
-                        );
+                        BlocProvider.of<AccountDataCubit>(context)
+                            .changePassword(_passwordController.text);
+                        Navigator.of(context).pop();
                       },
-                      child: const Text('Login'),
+                      child: const Text('Change password'),
                     ),
                   ),
                 ],
               ),
-            ),
-            TextButton(
-              onPressed: () {
-                BlocProvider.of<AppCubit>(context).register();
-              },
-              child: const Text('Do bot have account?'),
             ),
           ],
         )),
@@ -117,7 +93,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void dispose() {
-    _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }

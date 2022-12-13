@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
-import 'package:marine_manager/presentation/pages/account_page.dart';
-import 'package:marine_manager/presentation/pages/containers_page.dart';
-import 'package:marine_manager/presentation/pages/routes_page.dart';
-import 'package:marine_manager/presentation/pages/ships_page.dart';
+import '../pages/account_page.dart';
+import '../pages/containers_page.dart';
+import '../pages/routes_page.dart';
+import '../pages/ships_page.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});

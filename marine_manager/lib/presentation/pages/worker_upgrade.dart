@@ -3,20 +3,23 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../logic/account_data_cubit/account_data_cubit.dart';
 import '../../logic/app_cubit/app_cubit.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class WorkerUpgrade extends StatefulWidget {
+  const WorkerUpgrade({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<WorkerUpgrade> createState() => _WorkerUpgradeState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+class _WorkerUpgradeState extends State<WorkerUpgrade> {
+  final TextEditingController _companyController = TextEditingController();
+  final TextEditingController _countryController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Upgrade to worker'),
+      ),
       body: Center(
         child: Form(
             child: Column(
@@ -28,7 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Login to\nMarine Manager',
+                    'Upgrade to worker',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
@@ -38,28 +41,28 @@ class _LoginScreenState extends State<LoginScreen> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextField(
-                controller: _emailController,
+                controller: _companyController,
                 decoration: InputDecoration(
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
                     filled: true,
                     hintStyle: TextStyle(color: Colors.grey[800]),
-                    hintText: 'Email',
+                    hintText: 'Company',
                     fillColor: Colors.white70),
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextField(
-                controller: _passwordController,
+                controller: _countryController,
                 decoration: InputDecoration(
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
                     filled: true,
                     hintStyle: TextStyle(color: Colors.grey[800]),
-                    hintText: 'Password',
+                    hintText: 'Country',
                     fillColor: Colors.white70),
               ),
             ),
@@ -73,23 +76,22 @@ class _LoginScreenState extends State<LoginScreen> {
                         foregroundColor: Colors.white,
                         backgroundColor: Colors.blue,
                       ),
-                      onPressed: () {
-                        if (_emailController.text.isEmpty ||
-                            _passwordController.text.isEmpty) {
+                      onPressed: () async {
+                        if (_companyController.text.isEmpty ||
+                            _countryController.text.isEmpty) {
                           _displaySnackbar('Fill all the fields');
                           return;
                         }
-                        BlocProvider.of<AccountDataCubit>(context).authUser(
-                          _emailController.text,
-                          _passwordController.text,
-                          onWrongCreds: () =>
-                              _displaySnackbar('Wrong credentials'),
-                          onSuccess: () {
-                            BlocProvider.of<AppCubit>(context).logged();
-                          },
+
+                        await BlocProvider.of<AccountDataCubit>(context)
+                            .upgradeToWorker(
+                          _companyController.text,
+                          _countryController.text,
                         );
+
+                        if (mounted) Navigator.of(context).pop();
                       },
-                      child: const Text('Login'),
+                      child: const Text('Upgrade to worker'),
                     ),
                   ),
                 ],
@@ -117,8 +119,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
+    _companyController.dispose();
+    _countryController.dispose();
     super.dispose();
   }
 }

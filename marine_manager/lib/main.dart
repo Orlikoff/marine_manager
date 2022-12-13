@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:marine_manager/data/data_providers/postgres_data_provider.dart';
-import 'package:marine_manager/data/repositories/marine_repo.dart';
-import 'package:marine_manager/logic/account_data_cubit/account_data_cubit.dart';
-import 'package:marine_manager/logic/app_cubit/app_cubit.dart';
-import 'package:marine_manager/logic/container_data_cubit/container_data_cubit.dart';
-import 'package:marine_manager/presentation/screens/login_screen.dart';
-import 'package:marine_manager/presentation/screens/register_screen.dart';
 import 'package:postgres/postgres.dart';
 
+import 'data/data_providers/postgres_data_provider.dart';
+import 'data/repositories/marine_repo.dart';
+import 'logic/account_data_cubit/account_data_cubit.dart';
+import 'logic/app_cubit/app_cubit.dart';
+import 'logic/container_data_cubit/container_data_cubit.dart';
+import 'presentation/screens/login_screen.dart';
+import 'presentation/screens/register_screen.dart';
 import 'presentation/screens/main_screen.dart';
 
 Future<void> main() async {
@@ -32,7 +32,6 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(

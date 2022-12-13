@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:marine_manager/credentials.dart';
-import 'package:marine_manager/logic/account_data_cubit/account_data_cubit.dart';
-import 'package:marine_manager/logic/app_cubit/app_cubit.dart';
-import 'package:marine_manager/logic/container_data_cubit/container_data_cubit.dart';
+import 'package:marine_manager/presentation/pages/change_password.dart';
+import 'package:marine_manager/presentation/pages/worker_upgrade.dart';
+import '../../credentials.dart';
+import '../../logic/account_data_cubit/account_data_cubit.dart';
+import '../../logic/app_cubit/app_cubit.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
@@ -115,11 +116,23 @@ class _AccountPageState extends State<AccountPage> {
                   'Company name:',
                   style: theme.titleLarge,
                 ),
-                Text(
-                  credentials!['company_name'].toString(),
-                  style: theme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.normal,
-                  ),
+                BlocBuilder<AccountDataCubit, AccountDataState>(
+                  builder: (context, state) {
+                    if (state is AccountDataChanged) {
+                      return Text(
+                        credentials!['company_name'].toString(),
+                        style: theme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.normal,
+                        ),
+                      );
+                    }
+                    return Text(
+                      credentials!['company_name'].toString(),
+                      style: theme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.normal,
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
@@ -133,11 +146,23 @@ class _AccountPageState extends State<AccountPage> {
                   'Country:',
                   style: theme.titleLarge,
                 ),
-                Text(
-                  credentials!['country_of_origin'].toString(),
-                  style: theme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.normal,
-                  ),
+                BlocBuilder<AccountDataCubit, AccountDataState>(
+                  builder: (context, state) {
+                    if (state is AccountDataChanged) {
+                      return Text(
+                        credentials!['country_of_origin'].toString(),
+                        style: theme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.normal,
+                        ),
+                      );
+                    }
+                    return Text(
+                      credentials!['country_of_origin'].toString(),
+                      style: theme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.normal,
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
@@ -152,7 +177,13 @@ class _AccountPageState extends State<AccountPage> {
                     foregroundColor: Colors.white,
                     backgroundColor: Colors.blue,
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const ChangePassword(),
+                      ),
+                    );
+                  },
                   child: const Text('Change password'),
                 ),
                 TextButton(
@@ -187,7 +218,15 @@ class _AccountPageState extends State<AccountPage> {
                       foregroundColor: Colors.white,
                       backgroundColor: Colors.orange,
                     ),
-                    onPressed: () {},
+                    onPressed: credentials!['country_of_origin'] == null
+                        ? () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => const WorkerUpgrade(),
+                              ),
+                            );
+                          }
+                        : null,
                     child: const Text('Upgrade to worker'),
                   ),
                 ),
