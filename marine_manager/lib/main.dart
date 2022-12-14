@@ -40,10 +40,13 @@ class MyApp extends StatelessWidget {
           create: (context) => ContainerDataCubit(MarineRepo.instance()),
         ),
         BlocProvider(
-          create: (context) => AccountDataCubit(MarineRepo.instance()),
+          create: (context) => AppCubit(),
         ),
         BlocProvider(
-          create: (context) => AppCubit(),
+          create: (context) => AccountDataCubit(
+            MarineRepo.instance(),
+            BlocProvider.of<AppCubit>(context),
+          ),
         ),
       ],
       child: MaterialApp(

@@ -112,17 +112,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               _displaySnackbar('Fill all the fields');
                               return;
                             }
-                            BlocProvider.of<AccountDataCubit>(context).authUser(
+                            BlocProvider.of<AccountDataCubit>(context)
+                                .registerUser(
+                              _nameController.text,
+                              _surnameController.text,
                               _emailController.text,
                               _passwordController.text,
-                              onWrongCreds: () =>
-                                  _displaySnackbar('Wrong credentials'),
-                              onSuccess: () {
-                                BlocProvider.of<AppCubit>(context).logged();
-                              },
                             );
                           },
-                          child: const Text('Login'),
+                          child: const Text('Register'),
                         ),
                       ),
                     ],

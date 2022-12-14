@@ -1,5 +1,7 @@
 import 'package:flutter/animation.dart';
 import 'package:marine_manager/credentials.dart';
+import 'package:marine_manager/data/entities/container.dart';
+import 'package:marine_manager/data/entities/vessel.dart';
 import '../abstractions/data_provider.dart';
 
 class MarineRepo {
@@ -18,6 +20,55 @@ class MarineRepo {
   }
 
   // Functions of repository
+  Future<List<VesselData>> loadShips() async {
+    List<VesselData> ships = [];
+
+    var data = await dataProvider.loadQueryResults(
+        'SELECT id, route_id, marine_worker_id, vessel_verbose_name, country_of_origin, max_load_capacity FROM vessel;');
+
+    for (final row in data) {
+      ships.add(
+        VesselData(
+          id: row['vessel']!['id'],
+          routeId: row['vessel']!['route_id'],
+          marineWorkerId: row['vessel']!['marine_worker_id'],
+          vesselVerboseName: row['vessel']!['vessel_verbose_name'],
+          countryOfOrigin: row['vessel']!['country_of_origin'],
+          maxLoadCapacity: row['vessel']!['max_load_capacity'],
+        ),
+      );
+    }
+
+    return ships;
+  }
+
+  Future<void> removeContainer(dynamic id) async {
+    await dataProvider
+        .loadQueryResults('DELETE FROM container WHERE id=@i', subValues: {
+      'i': id,
+    });
+  }
+
+  Future<List<ContainerData>> loadContainers() async {
+    List<ContainerData> containers = [];
+    var data = await dataProvider.loadQueryResults(
+        'SELECT id, dispatch_port_id, destination_port_id, vessel_id, container_code FROM container;');
+
+    for (final row in data) {
+      containers.add(
+        ContainerData(
+          id: row['container']!['id'],
+          dispatchPortId: row['container']!['dispatch_port_id'],
+          destinationPortId: row['container']!['destination_port_id'],
+          vesselId: row['container']!['vessel_id'],
+          containerCode: row['container']!['container_code'],
+        ),
+      );
+    }
+
+    return containers;
+  }
+
   Future<List<List<dynamic>>> loadUsernames() async {
     final List<List<dynamic>> usernamesById = [];
     var data = await dataProvider.loadQueryResults(
@@ -165,6 +216,34 @@ class MarineRepo {
         subValues: {
           'id': credentials!['id'],
           'mid': id,
+        });
+  }
+
+  void removeAccount() {
+    var id = credentials!['id'];
+    var mid = credentials!['marine_worker_id'];
+
+    dataProvider
+        .loadQueryResults('DELETE FROM user_data WHERE id=@i', subValues: {
+      'i': id,
+    });
+
+    dataProvider
+        .loadQueryResults('DELETE FROM marine_worker WHERE id=@i', subValues: {
+      'i': mid,
+    });
+  }
+
+  Future<void> registerUser(
+      String name, String surname, String email, String password) async {
+    await dataProvider.loadQueryResults(
+        'INSERT INTO user_data(user_name, user_surname, user_email, user_password)'
+        'VALUES (@n, @s, @e, @p);',
+        subValues: {
+          'n': name,
+          's': surname,
+          'e': email,
+          'p': password,
         });
   }
 }

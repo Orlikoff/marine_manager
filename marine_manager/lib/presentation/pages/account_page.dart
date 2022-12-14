@@ -201,7 +201,9 @@ class _AccountPageState extends State<AccountPage> {
                     foregroundColor: Colors.white,
                     backgroundColor: Colors.blue,
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    BlocProvider.of<AccountDataCubit>(context).removeAccount();
+                  },
                   child: const Text('Delete account'),
                 ),
               ],

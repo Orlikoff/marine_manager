@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:marine_manager/credentials.dart';
+import 'package:marine_manager/data/entities/container.dart';
+import 'package:marine_manager/presentation/pages/add_container.dart';
 import '../../logic/container_data_cubit/container_data_cubit.dart';
 
 class ContainersPage extends StatefulWidget {
@@ -15,6 +18,20 @@ class _ContainersPageState extends State<ContainersPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Containers'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: credentials!['marine_worker_id'] == null
+                ? null
+                : () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const AddContainer(),
+                      ),
+                    );
+                  },
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -23,7 +40,8 @@ class _ContainersPageState extends State<ContainersPage> {
             children: [
               TextButton(
                 onPressed: () async {
-                  await BlocProvider.of<ContainerDataCubit>(context).loadData();
+                  await BlocProvider.of<ContainerDataCubit>(context)
+                      .loadDataContainer();
                 },
                 child: const Text('Fetch data'),
               ),
@@ -36,22 +54,22 @@ class _ContainersPageState extends State<ContainersPage> {
               } else if (state is ContainerDataChanged) {
                 return Expanded(
                   child: ListView.builder(
-                    itemCount: state.data.length,
+                    itemCount: state.data.length * 2,
                     itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () async =>
-                            BlocProvider.of<ContainerDataCubit>(context)
-                                .changeUsername(
-                          state.data.elementAt(index)[0],
-                          'newUsername${state.data.elementAt(index)[1]}',
-                          onError: () => _displaySnackbar(
-                              'Check length of username: max is 30'),
+                      if (index % 2 == 1) return const Divider();
+                      final ContainerData data = state.data[index ~/ 2];
+                      return ListTile(
+                        leading: Text(data.containerCode.toString()),
+                        title: Center(
+                          child: Text(
+                              "In port: ${data.vesselId == 'null' ? 'No' : 'Yes'}"),
                         ),
-                        child: Container(
-                          margin: const EdgeInsets.all(3),
-                          height: 50,
-                          color: Colors.amber,
-                          child: Text(state.data.elementAt(index)[1]),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.remove),
+                          onPressed: () {
+                            BlocProvider.of<ContainerDataCubit>(context)
+                                .removeContainer(data.id);
+                          },
                         ),
                       );
                     },
