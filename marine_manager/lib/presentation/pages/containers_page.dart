@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:marine_manager/credentials.dart';
-import 'package:marine_manager/data/entities/container.dart';
-import 'package:marine_manager/presentation/pages/add_container.dart';
+
+import '../../credentials.dart';
+import '../../data/entities/container.dart';
 import '../../logic/container_data_cubit/container_data_cubit.dart';
+import 'add_container.dart';
 
 class ContainersPage extends StatefulWidget {
   const ContainersPage({super.key});
@@ -59,10 +60,50 @@ class _ContainersPageState extends State<ContainersPage> {
                       if (index % 2 == 1) return const Divider();
                       final ContainerData data = state.data[index ~/ 2];
                       return ListTile(
-                        leading: Text(data.containerCode.toString()),
+                        leading: TextButton(
+                          onPressed: () {
+                            showDialog(
+                                context: context,
+                                builder: (_) {
+                                  return AlertDialog(
+                                    title: Text(data.containerCode),
+                                    content: SizedBox(
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.1,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Dispatch id: ${data.dispatchPortId}',
+                                          ),
+                                          Text(
+                                            'Destination id: ${data.destinationPortId}',
+                                          ),
+                                          Text(
+                                            'Vessel id: ${data.vesselId}',
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(),
+                                        child: const Text('Okay'),
+                                      ),
+                                    ],
+                                  );
+                                });
+                          },
+                          child: Text(
+                            data.containerCode.toString(),
+                          ),
+                        ),
                         title: Center(
                           child: Text(
-                              "In port: ${data.vesselId == 'null' ? 'No' : 'Yes'}"),
+                              "In port: ${data.vesselId.toString() == 'null' ? 'Yes' : 'No'}"),
                         ),
                         trailing: IconButton(
                           icon: const Icon(Icons.remove),
@@ -83,13 +124,5 @@ class _ContainersPageState extends State<ContainersPage> {
         ],
       ),
     );
-  }
-
-  void _displaySnackbar(String message) {
-    ScaffoldMessenger.of(context).removeCurrentSnackBar();
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      duration: const Duration(seconds: 2),
-      content: Text(message),
-    ));
   }
 }

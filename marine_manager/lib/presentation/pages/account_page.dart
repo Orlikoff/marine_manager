@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:marine_manager/presentation/pages/change_password.dart';
-import 'package:marine_manager/presentation/pages/worker_upgrade.dart';
+import 'change_password.dart';
+import 'worker_upgrade.dart';
 import '../../credentials.dart';
 import '../../logic/account_data_cubit/account_data_cubit.dart';
 import '../../logic/app_cubit/app_cubit.dart';

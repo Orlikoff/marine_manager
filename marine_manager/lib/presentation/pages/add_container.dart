@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:line_icons/line_icon.dart';
-import 'package:marine_manager/data/entities/vessel.dart';
-import 'package:marine_manager/logic/container_data_cubit/container_data_cubit.dart';
+import '../../data/entities/vessel.dart';
+import '../../logic/container_data_cubit/container_data_cubit.dart';
 import '../../logic/account_data_cubit/account_data_cubit.dart';
 import '../../logic/app_cubit/app_cubit.dart';
 
@@ -93,29 +93,39 @@ class _AddContainerState extends State<AddContainer> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  DropdownButton<String>(
-                    hint: const Text('Dispatch port'),
-                    icon: LineIcon.arrowCircleRight(
-                      color: Colors.blue,
-                    ),
-                    items: const [
-                      DropdownMenuItem(
-                        value: 'null',
-                        child: const Text('No port'),
-                      ),
-                      DropdownMenuItem(
-                        value: '1st',
-                        child: const Text('First disp 1'),
-                      ),
-                      DropdownMenuItem(
-                        value: '2nd',
-                        child: const Text('Second disp2'),
-                      ),
-                    ],
-                    onChanged: (String? value) {
-                      setState(() {
-                        dispPortId = value;
-                      });
+                  FutureBuilder(
+                    future: BlocProvider.of<ContainerDataCubit>(context)
+                        .getPortList(),
+                    builder: (_, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Text('Wait for loading');
+                      } else if (snapshot.connectionState ==
+                          ConnectionState.done) {
+                        return DropdownButton<String>(
+                          hint: const Text('Dispatch port'),
+                          icon: LineIcon.arrowCircleRight(
+                            color: Colors.blue,
+                          ),
+                          items: [
+                            const DropdownMenuItem(
+                              value: 'null',
+                              child: Text('No dispatch?!'),
+                            ),
+                            ...List.generate(snapshot.data!.length, (index) {
+                              return DropdownMenuItem(
+                                value: snapshot.data![index].id.toString(),
+                                child: Text(snapshot.data![index].portName),
+                              );
+                            }),
+                          ],
+                          onChanged: (String? value) {
+                            setState(() {
+                              dispPortId = value;
+                            });
+                          },
+                        );
+                      }
+                      return const Text('Waiting for data');
                     },
                   ),
                   Text(dispPortId.toString()),
@@ -127,29 +137,39 @@ class _AddContainerState extends State<AddContainer> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  DropdownButton<String>(
-                    hint: const Text('Destination port'),
-                    icon: LineIcon.arrowCircleLeft(
-                      color: Colors.blue,
-                    ),
-                    items: const [
-                      DropdownMenuItem(
-                        value: 'null',
-                        child: const Text('No port'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'Ass',
-                        child: const Text('ass'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'Meow',
-                        child: const Text('F'),
-                      ),
-                    ],
-                    onChanged: (String? value) {
-                      setState(() {
-                        destPortId = value;
-                      });
+                  FutureBuilder(
+                    future: BlocProvider.of<ContainerDataCubit>(context)
+                        .getPortList(),
+                    builder: (_, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Text('Wait for loading');
+                      } else if (snapshot.connectionState ==
+                          ConnectionState.done) {
+                        return DropdownButton<String>(
+                          hint: const Text('Destination port'),
+                          icon: LineIcon.arrowCircleLeft(
+                            color: Colors.blue,
+                          ),
+                          items: [
+                            const DropdownMenuItem(
+                              value: 'null',
+                              child: Text('No destination'),
+                            ),
+                            ...List.generate(snapshot.data!.length, (index) {
+                              return DropdownMenuItem(
+                                value: snapshot.data![index].id.toString(),
+                                child: Text(snapshot.data![index].portName),
+                              );
+                            }),
+                          ],
+                          onChanged: (String? value) {
+                            setState(() {
+                              destPortId = value;
+                            });
+                          },
+                        );
+                      }
+                      return const Text('Waiting for data');
                     },
                   ),
                   Text(destPortId.toString()),
@@ -182,14 +202,21 @@ class _AddContainerState extends State<AddContainer> {
                       ),
                       onPressed: () {
                         if (_codeController.text.isEmpty ||
-                            dispPortId == null ||
+                            dispPortId == 'null' ||
                             dispPortId == destPortId) {
                           _displaySnackbar(
                               'Fill dispatch port and code (disp!=dest)!');
                           return;
                         }
-                        // BlocProvider.of<ContainerDataCubit>(context)
-                        //     .createContainer();
+                        BlocProvider.of<ContainerDataCubit>(context)
+                            .createContainer(
+                          dispPortId: dispPortId,
+                          destPortId: destPortId,
+                          vesselId: vesselId,
+                          code: _codeController.text,
+                        );
+                        print('Vessel id: $vesselId');
+                        Navigator.of(context).pop();
                       },
                       child: const Text('Create'),
                     ),

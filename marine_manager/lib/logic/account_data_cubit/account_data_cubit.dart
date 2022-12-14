@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/animation.dart';
-import 'package:marine_manager/logic/app_cubit/app_cubit.dart';
+import '../app_cubit/app_cubit.dart';
 import '../../credentials.dart';
 import '../../data/repositories/marine_repo.dart';
 

@@ -1,8 +1,11 @@
 import 'package:flutter/animation.dart';
-import 'package:marine_manager/credentials.dart';
-import 'package:marine_manager/data/entities/container.dart';
-import 'package:marine_manager/data/entities/vessel.dart';
+import 'package:flutter/cupertino.dart';
+import '../../credentials.dart';
+import '../entities/container.dart';
+import '../entities/port.dart';
+import '../entities/vessel.dart';
 import '../abstractions/data_provider.dart';
+import '../entities/route.dart';
 
 class MarineRepo {
   late final DataProvider dataProvider;
@@ -20,6 +23,191 @@ class MarineRepo {
   }
 
   // Functions of repository
+  Future<void> removeRoute(dynamic id) async {
+    await dataProvider
+        .loadQueryResults('DELETE FROM route WHERE id=@i', subValues: {
+      'i': id,
+    });
+  }
+
+  Future<void> createLinkedPorts({
+    required dynamic routeId,
+    required List<PortData> portsLinked,
+  }) async {
+    for (var port in portsLinked) {
+      await createPortRoute(portId: port.id, routeId: routeId);
+    }
+  }
+
+  Future<void> createPortRoute({
+    required dynamic portId,
+    required dynamic routeId,
+  }) async {
+    await dataProvider.loadQueryResults(
+        'INSERT INTO port_route(port_id, route_id)'
+        'VALUES (@p, @r);',
+        subValues: {
+          'p': portId,
+          'r': routeId,
+        });
+  }
+
+  Future<dynamic> createRoute({
+    required dynamic shipmentCompany,
+    required dynamic routeVesselCode,
+  }) async {
+    await dataProvider.loadQueryResults(
+        'INSERT INTO route(marine_worker_id, shipment_company, route_vessel_code)'
+        'VALUES (@m, @s, @r);',
+        subValues: {
+          'm': credentials!['marine_worker_id'],
+          's': shipmentCompany,
+          'r': routeVesselCode,
+        });
+
+    var data = await dataProvider.loadQueryResults(
+        'SELECT id FROM route WHERE route_vessel_code=@r',
+        subValues: {
+          'r': routeVesselCode,
+        });
+
+    dynamic id;
+
+    for (final row in data) {
+      id = row['route']!['id'];
+    }
+
+    return id;
+  }
+
+  Future<List<RouteData>> loadRoutes() async {
+    List<RouteData> routes = [];
+
+    var data = await dataProvider.loadQueryResults(
+        'SELECT id, marine_worker_id, shipment_company, route_vessel_code FROM route;');
+
+    for (final row in data) {
+      routes.add(
+        RouteData(
+          id: row['route']!['id'],
+          marineWorkerId: row['route']!['marine_worker_id'],
+          shipmentCompany: row['route']!['shipment_company'],
+          routeVesselCode: row['route']!['route_vessel_code'],
+        ),
+      );
+    }
+
+    return routes;
+  }
+
+  Future<void> createShip({
+    required dynamic routeId,
+    required dynamic vesselVerboseName,
+    required dynamic countryOfOrigin,
+    required dynamic maxLoadCapacity,
+  }) async {
+    if (routeId == null) {
+      await dataProvider.loadQueryResults(
+          'INSERT INTO vessel(marine_worker_id, vessel_verbose_name, country_of_origin, max_load_capacity)'
+          'VALUES (@mid, @v, @c, @m);',
+          subValues: {
+            'mid': credentials!['marine_worker_id'],
+            'v': vesselVerboseName,
+            'c': countryOfOrigin,
+            'm': maxLoadCapacity.toString(),
+          });
+    } else {
+      await dataProvider.loadQueryResults(
+          'INSERT INTO vessel(route_id, marine_worker_id, vessel_verbose_name, country_of_origin, max_load_capacity)'
+          'VALUES (@r, @mid, @v, @c, @m);',
+          subValues: {
+            'r': routeId,
+            'mid': credentials!['marine_worker_id'],
+            'v': vesselVerboseName,
+            'c': countryOfOrigin,
+            'm': maxLoadCapacity,
+          });
+    }
+  }
+
+  Future<void> removeShip(dynamic id) async {
+    await dataProvider
+        .loadQueryResults('DELETE FROM vessel WHERE id=@i', subValues: {
+      'i': id,
+    });
+  }
+
+  Future<void> createContainer({
+    required dynamic dispPortId,
+    required dynamic destPortId,
+    required dynamic vesselId,
+    required dynamic code,
+  }) async {
+    if (vesselId == null && destPortId == null) {
+      await dataProvider.loadQueryResults(
+          'INSERT INTO container(dispatch_port_id, container_code)'
+          'VALUES (@d, @c);',
+          subValues: {
+            'd': dispPortId,
+            'c': code,
+          });
+      return;
+    } else if (vesselId == null) {
+      await dataProvider.loadQueryResults(
+          'INSERT INTO container(dispatch_port_id, destination_port_id, container_code)'
+          'VALUES (@d, @des, @c);',
+          subValues: {
+            'd': dispPortId,
+            'c': code,
+            'des': destPortId,
+          });
+      return;
+    } else if (destPortId == null) {
+      await dataProvider.loadQueryResults(
+          'INSERT INTO container(dispatch_port_id, vessel_id, container_code)'
+          'VALUES (@d, @v, @c);',
+          subValues: {
+            'd': dispPortId,
+            'c': code,
+            'v': vesselId,
+          });
+      return;
+    } else {
+      await dataProvider.loadQueryResults(
+          'INSERT INTO container(dispatch_port_id, destination_port_id, vessel_id, container_code)'
+          'VALUES (@d, @des, @v, @c);',
+          subValues: {
+            'd': dispPortId,
+            'c': code,
+            'des': destPortId,
+            'v': vesselId,
+          });
+      return;
+    }
+  }
+
+  Future<List<PortData>> loadPorts() async {
+    List<PortData> ports = [];
+
+    var data = await dataProvider.loadQueryResults(
+        'SELECT id, marine_worker_id, port_name, port_unified_code, port_country, max_containers_capacity FROM port;');
+
+    for (final row in data) {
+      ports.add(
+        PortData(
+          id: row['port']!['id'],
+          marineWorkerId: row['port']!['marine_worker_id'],
+          portName: row['port']!['port_name'],
+          portUnifiedCode: row['port']!['port_unified_code'],
+          portCountry: row['port']!['port_country'],
+          maxContainersCapacity: row['port']!['max_containers_capacity'],
+        ),
+      );
+    }
+
+    return ports;
+  }
+
   Future<List<VesselData>> loadShips() async {
     List<VesselData> ships = [];
 

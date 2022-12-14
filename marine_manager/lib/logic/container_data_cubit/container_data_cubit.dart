@@ -1,7 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/animation.dart';
-import 'package:marine_manager/data/entities/vessel.dart';
+import '../../data/entities/port.dart';
+import '../../data/entities/vessel.dart';
 import '../../data/repositories/marine_repo.dart';
 import 'package:meta/meta.dart';
 import 'package:postgres/postgres.dart';
@@ -28,5 +29,24 @@ class ContainerDataCubit extends Cubit<ContainerDataState> {
 
   Future<List<VesselData>> getVesselList() async {
     return await marineRepo.loadShips();
+  }
+
+  Future<List<PortData>> getPortList() async {
+    return await marineRepo.loadPorts();
+  }
+
+  Future<void> createContainer({
+    required dynamic dispPortId,
+    required dynamic destPortId,
+    required dynamic vesselId,
+    required dynamic code,
+  }) async {
+    await marineRepo.createContainer(
+      dispPortId: dispPortId,
+      destPortId: destPortId == 'null' ? null : destPortId,
+      vesselId: vesselId == 'null' ? null : vesselId,
+      code: code,
+    );
+    await loadDataContainer();
   }
 }

@@ -1,5 +1,6 @@
-import '../abstractions/data_provider.dart';
 import 'package:postgres/postgres.dart';
+
+import '../abstractions/data_provider.dart';
 
 class PostgresDataProvider implements DataProvider {
   final PostgreSQLConnection connection;

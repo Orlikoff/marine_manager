@@ -1,8 +1,6 @@
-import 'dart:math';
-
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:marine_manager/credentials.dart';
+import '../../credentials.dart';
 
 part 'app_state.dart';
 

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'logic/route_data_cubit/route_data_cubit.dart';
+import 'logic/ship_data_cubit/ship_data_cubit.dart';
 import 'package:postgres/postgres.dart';
 
 import 'data/data_providers/postgres_data_provider.dart';
@@ -38,6 +40,12 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider(
           create: (context) => ContainerDataCubit(MarineRepo.instance()),
+        ),
+        BlocProvider(
+          create: (context) => ShipDataCubit(MarineRepo.instance()),
+        ),
+        BlocProvider(
+          create: (context) => RouteDataCubit(MarineRepo.instance()),
         ),
         BlocProvider(
           create: (context) => AppCubit(),
