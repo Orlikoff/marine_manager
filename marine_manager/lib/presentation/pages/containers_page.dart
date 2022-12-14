@@ -107,10 +107,12 @@ class _ContainersPageState extends State<ContainersPage> {
                         ),
                         trailing: IconButton(
                           icon: const Icon(Icons.remove),
-                          onPressed: () {
-                            BlocProvider.of<ContainerDataCubit>(context)
-                                .removeContainer(data.id);
-                          },
+                          onPressed: credentials!['marine_worker_id'] == null
+                              ? null
+                              : () {
+                                  BlocProvider.of<ContainerDataCubit>(context)
+                                      .removeContainer(data.id);
+                                },
                         ),
                       );
                     },

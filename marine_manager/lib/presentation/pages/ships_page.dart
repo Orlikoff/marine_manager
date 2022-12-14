@@ -108,10 +108,12 @@ class _ShipsPageState extends State<ShipsPage> {
                         ),
                         trailing: IconButton(
                           icon: const Icon(Icons.remove),
-                          onPressed: () {
-                            BlocProvider.of<ShipDataCubit>(context)
-                                .removeShip(data.id);
-                          },
+                          onPressed: credentials!['marine_worker_id'] == null
+                              ? null
+                              : () {
+                                  BlocProvider.of<ShipDataCubit>(context)
+                                      .removeShip(data.id);
+                                },
                         ),
                       );
                     },

@@ -104,10 +104,12 @@ class _RoutesPageState extends State<RoutesPage> {
                         ),
                         trailing: IconButton(
                           icon: const Icon(Icons.remove),
-                          onPressed: () {
-                            BlocProvider.of<RouteDataCubit>(context)
-                                .removeRoute(data.id);
-                          },
+                          onPressed: credentials!['marine_worker_id'] == null
+                              ? null
+                              : () {
+                                  BlocProvider.of<RouteDataCubit>(context)
+                                      .removeRoute(data.id);
+                                },
                         ),
                       );
                     },
